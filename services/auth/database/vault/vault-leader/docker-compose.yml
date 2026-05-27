@@ -1,0 +1,18 @@
+services:
+  vault-leader:
+    image: hashicorp/vault:latest
+    cap_add:
+      - IPC_LOCK
+    user: "root"
+    volumes:
+      - ./vault/config:/vault/config
+      - vault-data:/vault/data/leader-data
+      - ./start.sh:/start.sh
+    entrypoint: ["/start.sh"]
+    networks:
+      - vault-internal
+
+volumes:
+  vault-data:
+    driver: "local"
+    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_leader_data}"

@@ -1,0 +1,18 @@
+services:
+  vault-slave2:
+    image: hashicorp/vault:latest
+    cap_add:
+      - IPC_LOCK
+    user: "root"
+    volumes:
+      - ./vault/config:/vault/config
+      - vault-slave2-data:/vault/data/slave2-data
+      - ./start.sh:/start.sh
+    entrypoint: ["/start.sh"]
+    networks:
+      - vault-internal
+
+volumes:
+  vault-slave2-data:
+    driver: "local"
+    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_slave2_data}"

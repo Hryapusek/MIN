@@ -1,0 +1,12 @@
+include:
+  - ./vault-leader/docker-compose.yml
+  - ./vault-slave1/docker-compose.yml
+  - ./vault-slave2/docker-compose.yml
+
+networks:
+  vault-external:
+    driver: bridge
+
+  vault-internal:
+    driver: bridge
+    internal: true
