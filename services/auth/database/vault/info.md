@@ -37,3 +37,34 @@ disable_mlock = false
 - cluster_addr see [here](https://developer.hashicorp.com/vault/docs/configuration#cluster_addr)
 - api_addr see [here](https://developer.hashicorp.com/vault/docs/configuration#api_addr)
 - listener is just accepting connections from outside
+
+### Slave node
+
+Again we create a directory:
+```bash
+mkdir -p /vault/data/slave2-data
+```
+
+And a configuration file:
+
+```hcl
+storage "raft" {
+  path = "/vault/data/slave1-data"
+  node_id = "slave1"
+
+  retry_join {
+    leader_api_addr = "http://vault-leader:8200"
+  }
+}
+
+listener "tcp" {
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8201"
+  tls_disable     = true
+}
+
+api_addr     = "http://127.0.0.1:8200"
+cluster_addr = "http://vault-slave1:8201"
+ui = true
+disable_mlock = false
+```
