@@ -2,7 +2,7 @@ storage "raft" {
   path = "/vault/data/slave2-data"
   node_id = "slave2"
 
-  retry-join {
+  retry_join {
     leader_api_addr = "http://vault-leader:8200"
   }
 }
