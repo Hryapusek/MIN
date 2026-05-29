@@ -1,20 +1,20 @@
 services:
-  vault-slave1:
+  vault-unseal:
     image: hashicorp/vault:latest
     cap_add:
       - IPC_LOCK
     user: "root"
     volumes:
       - ./vault/config:/vault/config
-      - vault-slave1-data:/vault/data/slave1-data
+      - vault-unseal-data:/vault/data/unseal-data
       - ./start.sh:/start.sh
+      - ./setup.sh:/setup.sh
+      - ./policy.hcl:/policy.hcl
     entrypoint: ["/start.sh"]
     networks:
       - vault-internal
-    depends_on:
-      - vault-unseal
 
 volumes:
-  vault-slave1-data:
+  vault-unseal-data:
     driver: "local"
-    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_slave1_data}"
+    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_unseal_data}"

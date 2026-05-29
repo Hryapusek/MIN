@@ -3,6 +3,13 @@ storage "raft" {
   node_id = "leader"
 }
 
+seal "transit" {
+  address         = "http://vault-unseal:8200"
+  key_name        = "unseal-key"
+  mount_path      = "transit/"
+  disable_renewal = "false"
+}
+
 listener "tcp" {
   address         = "0.0.0.0:8200"
   cluster_address = "0.0.0.0:8201"

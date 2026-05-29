@@ -11,6 +11,8 @@ services:
     entrypoint: ["/start.sh"]
     networks:
       - vault-internal
+    depends_on:
+      - vault-unseal
 
 volumes:
   vault-slave2-data:
