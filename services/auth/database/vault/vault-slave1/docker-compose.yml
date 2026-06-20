@@ -8,6 +8,8 @@ services:
       - ./vault/config:/vault/config
       - vault-slave1-data:/vault/data/slave1-data
       - ./start.sh:/start.sh
+    environment:
+      VAULT_TOKEN: "${VAULT_TRANSIT_TOKEN}"
     entrypoint: ["/start.sh"]
     networks:
       - vault-internal

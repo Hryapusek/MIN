@@ -153,7 +153,7 @@ We should provide the token into the prompted line. Its not neccessarily the roo
 vault token create -orphan -period=24h -policy=policy-name
 ```
 
-> There are much args as well
+> There are many args as well
 
 In fact, we should only use root token on bootstrap. Then we should save it in a glass box or even better revoke it for the further safety
 
@@ -210,7 +210,7 @@ We finished setting up the unseal storage.
 ...
 
 ### Vault auto unseal target node
-Setup is mostly the same except for the
+Setup is mostly the same except for
 
 The config:
 ```hcl
@@ -238,4 +238,37 @@ ui = true
 disable_mlock = false
 ```
 
+We gotta provide the token into env:VAULT_TOKEN variable. We obtained the token earlier in the unseal setup.
 
+First when we try to start the container we will see errors like `"stored unseal keys are supported, but none were found"`. That means we simply forgot to init the current storage.
+
+
+After that we write the following script:
+```bash
+export VAULT_ADDR=http://127.0.0.1:8200
+vault operator init
+```
+
+The output will be something like this
+```bash
+Recovery Key 1: pGLTFpDh1ySLKqlKwC3V0LRQAQctC+p1mIZHCMtIJ1E1
+Recovery Key 2: Mfz/8OJRGZYIS3giI16xLN9fX8WbilY5sY14JTEyQyIC
+Recovery Key 3: n4DjRjUe24zQJgeThXkktRhFf3qKmdylS78OYWrKgf8m
+Recovery Key 4: WsTnmnZ6RunZcv6oexRNDKp7NLHv54x2zKCoME/bS38p
+Recovery Key 5: F821B4raYHVnFJA5pTdbhiIcN4JC32+4VaMEA2+RnJpQ
+
+Initial Root Token: hvs.0UxiStEfeVoF4mrm6ZrhXYTq
+
+Success! Vault is initialized
+
+Recovery key initialized with 5 key shares and a key threshold of 3. Please
+securely distribute the key shares printed above.
+```
+
+### Vault raft slave nodes
+You have to do the same steps in all slaves nodes
+
+```bash
+export VAULT_ADDR=http://127.0.0.1:8200
+vault operator init
+```
