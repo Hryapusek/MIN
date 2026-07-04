@@ -16,7 +16,7 @@ listener "tcp" {
   tls_disable     = true
 }
 
-api_addr     = "http://127.0.0.1:8200"
+api_addr     = "http://vault-leader:8200"
 cluster_addr = "http://vault-leader:8201"
 ui = true
 disable_mlock = false

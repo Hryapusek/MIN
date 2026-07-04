@@ -19,4 +19,4 @@ services:
 volumes:
   vault-slave2-data:
     driver: "local"
-    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_slave2_data}"
+    name: "${VAULT_SLAVE2_VOLUME_DATA_NAME:-vault_slave2_data}"

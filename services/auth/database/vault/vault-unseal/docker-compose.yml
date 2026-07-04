@@ -17,4 +17,4 @@ services:
 volumes:
   vault-unseal-data:
     driver: "local"
-    name: "${VAULT_LEADER_VOLUME_DATA_NAME:-vault_unseal_data}"
+    name: "${VAULT_UNSEAL_VOLUME_DATA_NAME:-vault_unseal_data}"
