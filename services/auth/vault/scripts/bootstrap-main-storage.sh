@@ -49,10 +49,15 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
+echo "Ensuring in output directory"
 ensure_output_dir
+echo "Created"
 
+echo "Ensuring in unseal storeage container"
 ensure_unseal_storage_container
+echo "Ensured"
 wait_for_unseal_storage_api
+echo "Unseal storage api ready"
 unseal_initialized=$(vault_status_field Initialized || true)
 unseal_sealed=$(vault_status_field Sealed || true)
 
@@ -61,7 +66,10 @@ unseal_sealed=$(vault_status_field Sealed || true)
 
 require_main_transit_token_configured
 ensure_main_leader_container
+echo "Waiting for main leader api"
 wait_for_main_leader_api
+
+echo "All containers are set up"
 
 main_initialized=$(main_status_field Initialized || true)
 main_sealed=$(main_status_field Sealed || true)

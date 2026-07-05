@@ -102,7 +102,6 @@ vault_status_output_for() {
   set +e
   output=$(vault_exec "$service" "$addr" status 2>&1)
   code=$?
-  set -e
   printf '%s\n' "$output"
   return "$code"
 }
@@ -124,7 +123,6 @@ wait_for_vault_api() {
     set +e
     vault_status_output_for "$service" "$addr" >/dev/null 2>&1
     code=$?
-    set -e
 
     # vault status returns 0 when unsealed and 2 when sealed/uninitialized.
     # Both mean the API is reachable.
