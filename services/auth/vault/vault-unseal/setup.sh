@@ -1,17 +1,14 @@
-#!/usr/bin/bash
+#!/bin/sh
+set -eu
 
-export VAULT_ADDR=http://127.0.0.1:8200
-vault operator init
-vault operator unseal
-vault operator unseal
-vault operator unseal
-vault login
+cat <<'MSG'
+This container-side setup.sh is intentionally disabled.
 
-vault secrets list
-vault secrets enable transit
-vault write -f transit/keys/unseal-key
-vault list transit/keys
-vault policy write unseal /policy.hcl
-vault token create -orphan -period=24h -policy=unseal
+Use the host-side scripts instead:
+  ./scripts/bootstrap-unseal-storage.sh
+  ./scripts/unseal-unseal-storage.sh
+  ./scripts/configure-unseal-storage.sh
+  ./scripts/status-unseal-storage.sh
 
-# vault token lookup -accessor
+Reason: blind `vault operator init` is dangerous after persistent data exists.
+MSG
