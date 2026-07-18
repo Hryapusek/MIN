@@ -13,4 +13,5 @@ def health() -> dict[str, str]:
         "status": "ok",
         "environment": settings.environment,
         "signing_backend": settings.token_signing_backend.value,
+        "signing_provider": settings.signing_provider_name,
     }

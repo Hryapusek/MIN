@@ -1,61 +1,51 @@
-# Auth schema notes
+# Auth schema and signing-key notes
 
-The ORM models in `app/models` are the source of truth. This document only explains the current small design.
+The ORM models are the schema source of truth.
 
 ## User
 
-`users` stores the local account:
-
-- UUID primary key;
-- normalized email (normalization will be implemented in the service layer);
-- password hash, never a plaintext password;
-- one global role: `user`, `moderator`, or `admin`;
-- `is_active` for account disabling;
-- `token_version` for coarse account-wide access-token invalidation later;
-- creation/update timestamps.
-
-A single role is intentional for the first version. Fine-grained permissions and conversation-local membership do not belong in this first auth migration.
+`users` stores a local account with a UUID, email, password hash, one small global role, activity status, token version, and timestamps. The initial global roles remain `user`, `moderator`, and `admin`.
 
 ## Device session
 
-`device_sessions` represents one authenticated application installation or browser session. Its UUID can be copied into the access-token `sid` claim.
-
-It stores:
-
-- owning user;
-- client-generated random `device_id`;
-- optional display name, User-Agent, IP, and app version;
-- creation and last-seen timestamps;
-- session expiry;
-- nullable `revoked_at`.
-
-A session is active when `revoked_at IS NULL` and it has not expired. Logging out one device revokes one row. Logging out everywhere revokes all sessions belonging to the user.
+`device_sessions` represents one authenticated browser or application installation. Its UUID is suitable for the JWT `sid` claim. Revoking one row logs out one device after current short-lived access tokens expire, unless an online revocation check is added later.
 
 ## Refresh token
 
-`refresh_tokens` stores one hash per issued opaque refresh token. Raw refresh tokens are returned to clients and must never be persisted in this database.
+`refresh_tokens` stores hashes of opaque refresh tokens. `family_id`, `consumed_at`, `replaced_by_id`, and `revoked_at` support rotation and later reuse detection. Refresh tokens are independent of the access-token signing provider.
 
-Rotation fields:
+## Signing key registry
 
-- `family_id` groups the complete login/rotation chain;
-- `consumed_at` marks a token already exchanged;
-- `replaced_by_id` points to the newly issued token;
-- reusing a consumed token can later revoke the whole family/session;
-- `revoked_at` supports explicit invalidation.
+`signing_keys` is a catalog and policy table, not a secret store.
 
-Refresh tokens work identically regardless of whether access tokens are signed locally or through Vault.
+It contains:
 
-## Signing key metadata
+- deterministic public-key `kid`;
+- configured `provider_name`;
+- backend type (`local` or `vault`);
+- provider-owned external reference and version;
+- purpose and algorithm;
+- public PEM and public JWK;
+- lifecycle status;
+- discovery, availability, activation, retirement, and disabling timestamps.
 
-`signing_keys` stores only public and routing metadata:
+Lifecycle states:
 
-- `kid` placed in the JWT header;
-- `backend`: `local` or `vault`;
-- JWT algorithm;
-- `key_reference` identifying an external key source;
-- public key PEM for verification/JWKS conversion later;
-- active/retired lifecycle timestamps.
+```text
+standby  -> discovered but not used for new tokens
+active   -> signs newly issued access tokens
+retiring -> no new signing; remains publishable through JWKS
+disabled -> neither signs nor normally appears in JWKS
+```
 
-There is deliberately no private-key column.
+A partial unique index permits only one `active` row for a purpose/algorithm pair.
 
-For a local development key, `key_reference` can point to an environment variable or mounted file. For Vault, it can identify a Transit key. In both cases the access token remains the same JWT format; only the signing backend changes.
+Provider reconciliation is conservative:
+
+- a new provider version becomes `standby`;
+- an existing version must retain the same public key and immutable metadata;
+- a missing provider key is marked unavailable rather than deleted;
+- an active unavailable key causes signing to fail closed;
+- the first and only key may auto-activate only when the registry was empty.
+
+Private RSA PEM files remain in the configured protected local directory. Vault private keys will remain inside Transit when that provider is implemented.

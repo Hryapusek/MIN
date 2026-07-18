@@ -1,42 +1,79 @@
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
-from typing import Any
+from dataclasses import dataclass
 
-from app.auth.types import SigningBackend
+from app.auth.types import SigningBackend, SigningKeyPurpose
 
 
-class AccessTokenSigner(ABC):
-    """Boundary between OAuth token issuance and the signing implementation.
+@dataclass(frozen=True, slots=True)
+class SigningKeyDescriptor:
+    """Public description of one provider-owned signing-key version.
 
-    Both implementations must eventually produce the same JWT access-token
-    format. Only the place where the private-key operation happens differs.
+    The descriptor deliberately contains no private material. PostgreSQL stores
+    a normalized version of this data, while the provider remains the source of
+    truth for the private signing operation.
     """
 
+    provider_name: str
+    backend: SigningBackend
+    external_reference: str
+    provider_version: int
+    purpose: SigningKeyPurpose
+    algorithm: str
+    public_key_pem: str
+
+
+@dataclass(frozen=True, slots=True)
+class SignatureResult:
+    kid: str
+    algorithm: str
+    signature: bytes
+
+
+class SigningProvider(ABC):
+    """Provider boundary shared by local files and Vault Transit."""
+
+    provider_name: str
     backend: SigningBackend
 
     @abstractmethod
-    async def sign(self, claims: Mapping[str, Any], *, key_id: str) -> str:
-        """Return a signed access token for the supplied claims."""
+    async def list_keys(self) -> list[SigningKeyDescriptor]:
+        """Return all key versions currently visible to this provider."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def sign(
+        self,
+        signing_input: bytes,
+        *,
+        external_reference: str,
+        provider_version: int,
+        algorithm: str,
+    ) -> bytes:
+        """Sign bytes with an explicitly selected provider key version."""
         raise NotImplementedError
 
 
-class LocalAccessTokenSigner(AccessTokenSigner):
-    """Development signer using a locally supplied private key.
+class VaultTransitSigningProvider(SigningProvider):
+    """Reserved Vault Transit implementation boundary.
 
-    The private key should later come from an environment variable, mounted
-    secret, or protected file. It must not be stored in the application DB.
+    Keeping the stub behind the same provider contract lets the registry and
+    OAuth/JWT layer remain unchanged when Vault support is added.
     """
-
-    backend = SigningBackend.LOCAL
-
-    async def sign(self, claims: Mapping[str, Any], *, key_id: str) -> str:
-        raise NotImplementedError("Local JWT signing will be implemented in a later batch")
-
-
-class VaultTransitAccessTokenSigner(AccessTokenSigner):
-    """Production-oriented signer delegating the private operation to Vault Transit."""
 
     backend = SigningBackend.VAULT
 
-    async def sign(self, claims: Mapping[str, Any], *, key_id: str) -> str:
-        raise NotImplementedError("Vault Transit JWT signing will be implemented in a later batch")
+    def __init__(self, *, provider_name: str) -> None:
+        self.provider_name = provider_name
+
+    async def list_keys(self) -> list[SigningKeyDescriptor]:
+        raise NotImplementedError("Vault Transit key discovery is not implemented yet")
+
+    async def sign(
+        self,
+        signing_input: bytes,
+        *,
+        external_reference: str,
+        provider_version: int,
+        algorithm: str,
+    ) -> bytes:
+        raise NotImplementedError("Vault Transit signing is not implemented yet")

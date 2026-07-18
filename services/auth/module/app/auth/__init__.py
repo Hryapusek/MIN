@@ -1,14 +1,19 @@
-"""Authentication-domain interfaces.
+"""Authentication and signing domain package.
 
-Concrete token signing and OAuth flows are intentionally left for later batches.
+Concrete classes are intentionally imported from their defining modules to
+avoid coupling ORM model import order to service-layer imports.
 """
 
-from app.auth.signing import AccessTokenSigner, LocalAccessTokenSigner, VaultTransitAccessTokenSigner
-from app.auth.types import SigningBackend
+from app.auth.types import (
+    InitialKeyActivationPolicy,
+    LocalKeyBootstrapPolicy,
+    SigningBackend,
+    SigningKeyPurpose,
+)
 
 __all__ = [
-    "AccessTokenSigner",
-    "LocalAccessTokenSigner",
+    "InitialKeyActivationPolicy",
+    "LocalKeyBootstrapPolicy",
     "SigningBackend",
-    "VaultTransitAccessTokenSigner",
+    "SigningKeyPurpose",
 ]

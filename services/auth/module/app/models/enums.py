@@ -10,5 +10,7 @@ class UserRole(str, Enum):
 
 
 class SigningKeyStatus(str, Enum):
+    STANDBY = "standby"
     ACTIVE = "active"
-    RETIRED = "retired"
+    RETIRING = "retiring"
+    DISABLED = "disabled"
