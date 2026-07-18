@@ -1,3 +1,23 @@
+# Current batch status
+
+Completed in the auth skeleton:
+
+```txt
+[x] Create application/core/db/models package layout
+[x] Add SQLAlchemy Base and session factory
+[x] Wire Alembic to ORM metadata
+[x] Add User with one simple global role
+[x] Add DeviceSession
+[x] Add hashed RefreshToken rotation model
+[x] Replace private-key DB storage with SigningKey metadata
+[x] Define local/Vault signing interface boundary
+[x] Add initial migration and health endpoint
+```
+
+Not implemented yet: repositories, password hashing, registration/login, token rotation service, JWT encoding, Vault API calls, JWKS, or HTTP auth endpoints.
+
+---
+
 ## Infrastructure / Compose
 
 ```txt

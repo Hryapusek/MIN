@@ -44,12 +44,16 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
+echo "[bootstrap-unseal-storage.sh] args parsed"
 
 ensure_output_dir
+echo "[bootstrap-unseal-storage.sh] output directory created"
 
 ensure_unseal_storage_container
+echo "[bootstrap-unseal-storage.sh] container created successfully"
 
 wait_for_unseal_storage_api
+echo "[bootstrap-unseal-storage.sh] waiting for unseal storage api finished"
 
 initialized=$(vault_status_field Initialized || true)
 sealed=$(vault_status_field Sealed || true)

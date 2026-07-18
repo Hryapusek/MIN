@@ -1,4 +1,0 @@
-alembic
-sqlalchemy
-python-dotenv
-psycopg[binary]

@@ -1,74 +1,53 @@
-# Vault scripts
+# Vault unseal storage scripts
 
-Run scripts from the `vault/` directory.
+These scripts are host-side helpers. They call the Vault CLI inside the
+`vault-unseal` container through Docker Compose, so you do not need `vault`
+installed on the host.
 
-## Unseal-storage Vault
+## First bootstrap
 
-First-time bootstrap:
+```bash
+./scripts/bootstrap-unseal-storage.sh
+```
+
+This starts `vault-unseal`, initializes it if needed, unseals it after fresh
+init, enables Transit, creates `transit/keys/unseal-key`, writes the policy, and
+creates a periodic orphan token for the main Vault nodes.
+
+Sensitive output is saved under `bootstrap-output/` and ignored by git.
+
+To print the generated main Vault transit token explicitly:
 
 ```bash
 ./scripts/bootstrap-unseal-storage.sh --print-sensitive
 ```
 
-Copy the printed `VAULT_TRANSIT_TOKEN=...` into local `.env`.
+Copy the printed token to local `.env` as `VAULT_TRANSIT_TOKEN=...` for dev.
 
-Unseal after `vault-unseal` restart:
+## Unseal after restart
+
+Safer interactive mode:
 
 ```bash
 ./scripts/unseal-unseal-storage.sh
 ```
 
-Dev convenience mode:
+Dev convenience mode using the generated init JSON:
 
 ```bash
 ./scripts/unseal-unseal-storage.sh --from-file bootstrap-output/unseal-storage-init-YYYYMMDD-HHMMSS.json
 ```
 
-Recreate the main Vault auto-unseal token:
+## Recreate main Vault transit token
+
+When `vault-unseal` is already initialized and unsealed:
 
 ```bash
 VAULT_TOKEN=<root-or-admin-token> ./scripts/configure-unseal-storage.sh --print-sensitive
 ```
 
-Status:
+## Status
 
 ```bash
 ./scripts/status-unseal-storage.sh
 ```
-
-## Main application Vault cluster
-
-First-time bootstrap:
-
-```bash
-./scripts/bootstrap-main-storage.sh --create-dev-auth-token --print-sensitive
-```
-
-Without printing sensitive values:
-
-```bash
-./scripts/bootstrap-main-storage.sh --create-dev-auth-token
-```
-
-Rerun-safe configuration after init:
-
-```bash
-VAULT_TOKEN=<root-or-admin-token> ./scripts/configure-main-storage.sh
-```
-
-Create a new dev auth-service token:
-
-```bash
-VAULT_TOKEN=<root-or-admin-token> ./scripts/configure-main-storage.sh --create-dev-auth-token --print-sensitive
-```
-
-Status:
-
-```bash
-./scripts/status-main-storage.sh
-```
-
-## Generated sensitive files
-
-The scripts write sensitive JSON bundles to `bootstrap-output/`. The directory is
-ignored by git and should not be shared or committed.
