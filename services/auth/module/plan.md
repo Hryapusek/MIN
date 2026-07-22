@@ -1,70 +1,63 @@
-# Current batch status
+# Project plan
 
-## Auth data model
+## Completed — component and folder boundaries
 
 ```text
-[x] User with a small global role
-[x] DeviceSession
-[x] Hashed opaque RefreshToken rotation model
-[x] SigningKey registry without private material
+[x] One Python project and dependency set
+[x] Separate messenger/services/auth folder
+[x] Separate messenger/services/key_manager folder
+[x] Separate messenger/services/signer folder
+[x] Auth-owned ORM models live with auth
+[x] SigningKey ORM model lives with key manager
+[x] Shared code limited to configuration, current DB foundation, and signing primitives
+[x] Key discovery separated from runtime signing
+[x] Local bootstrap and reconciliation owned by key manager
+[x] Explicit-key, database-independent signer
+[x] FastAPI auth composition root
+[x] Single-instance polling key-manager entry point
+[x] Existing Alembic history preserved
+[x] Focused boundary and lifecycle tests
 ```
 
-## Signing provider architecture
+## Current responsibility split
 
 ```text
-[x] Provider-neutral SigningProvider interface
-[x] Explicit provider name, key reference, and provider version
-[x] Local persistent key ring
-[x] generate_if_empty bootstrap policy
-[x] require_existing bootstrap policy
-[x] disabled bootstrap policy
-[x] Atomic local key-file creation
-[x] Path traversal and manifest validation
-[x] RS256 signing
-[x] Public JWK derivation
-[x] Deterministic JWK-thumbprint kid
-[x] Vault Transit provider boundary
-[ ] Vault Transit discovery/signing implementation
+Auth
+    users, device sessions, refresh tokens, future OAuth/JWT workflows
+
+Key manager
+    bootstrap, discovery, reconciliation, activation, retirement, disable
+
+Signer
+    execute an explicit signing request only
+
+Shared
+    small cross-service contracts and infrastructure required in this phase
 ```
 
-## Registry policy
+## Intentionally not implemented yet
 
 ```text
-[x] Provider-to-database reconciliation
-[x] standby / active / retiring / disabled lifecycle
-[x] First-key activation policy
-[x] One active key per purpose/algorithm
-[x] Missing-provider-key detection
-[x] Active-key resolution
-[x] Explicit-provider-version signing
-[x] Manual activation/retirement service method
-[x] Disable service method
-[x] Publishable-key query for future JWKS
-[ ] Administrative HTTP/CLI rotation command
-[ ] Automatic retirement cleanup policy
+[ ] OAuth endpoints
+[ ] JWT construction
+[ ] Signer HTTP/gRPC API and executable transport
+[ ] Vault Transit integration
+[ ] Local key rotation generation
+[ ] Leader election
+[ ] Separate Python projects or repositories
+[ ] Docker images
+[ ] Kubernetes manifests
+[ ] Separate physical databases
 ```
 
-## Operational profiles
+## Phase two
+
+See `NEXT_PROMPT.md`:
 
 ```text
-[x] Local machine with persistent Git-ignored keys
-[x] Docker development volume design
-[x] Docker one-shot initializer / read-only runtime design
-[x] Vault configuration boundary
-[x] Bootstrap/sync/list CLI commands
-```
-
-## OAuth work not implemented yet
-
-```text
-[ ] Password hashing
-[ ] User registration service
-[ ] Login service
-[ ] Device-session service
-[ ] Refresh-token generation
-[ ] Refresh-token rotation and reuse detection
-[ ] JWT encoding and claims
-[ ] JWKS endpoint
-[ ] Register/login/refresh/logout HTTP endpoints
-[ ] Vault Transit implementation
+[ ] PostgreSQL auth and key_management schemas
+[ ] Separate runtime database credentials and grants
+[ ] Safe Alembic table moves
+[ ] Development database initialization
+[ ] Signer remains database-independent
 ```

@@ -1,1 +1,0 @@
-"""Messenger authentication service package."""

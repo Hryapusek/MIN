@@ -3,9 +3,10 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import create_engine, pool
 
-from app.core.config import get_settings
-from app.db.base import Base
-import app.models  # noqa: F401  # registers all tables in Base.metadata
+from messenger.shared.core.config import get_settings
+from messenger.shared.db.base import Base
+import messenger.services.auth.models  # noqa: F401  # registers auth-owned tables
+import messenger.services.key_manager.models  # noqa: F401  # registers key-manager tables
 
 
 config = context.config
