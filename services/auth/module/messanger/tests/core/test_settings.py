@@ -1,9 +1,8 @@
 
-from src.core.settings import MainSettings
+from messanger.src.core.settings import MainSettings
 from pytest import MonkeyPatch
 
-def test_database_url():
-  monkeypatch = MonkeyPatch()
+def test_database_url(monkeypatch: MonkeyPatch):
   monkeypatch.setenv("ENVIRONMENT", "development")
   monkeypatch.setenv("DB_DATABASE", "messenger")
   monkeypatch.setenv("DB_DRIVER", "postgresql+psycopg")

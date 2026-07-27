@@ -1,6 +1,6 @@
 services:
   pgsql:
-    image: postgres:latest
+    image: postgres:17
     container_name: "${DB_CONTAINER_NAME:-pgsql_db}"
     environment:
       POSTGRES_DB: "${DB_DATABASE:-local}"

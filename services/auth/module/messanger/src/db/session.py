@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from core.settings import get_settings
+from messanger.src.core.settings import get_settings
 
 engine = create_engine(get_settings().database_url, pool_pre_ping=True)
 

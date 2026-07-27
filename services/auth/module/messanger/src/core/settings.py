@@ -1,28 +1,20 @@
 from pydantic import Field, field_validator
-from typing import Literal, Optional
+from typing import Literal
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class MainSettings(BaseSettings):
-  model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra="allow")
+  model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra="ignore")
 
-  ENVIRONMENT: str
+  ENVIRONMENT: Literal["development", "production", "test"]
 
   DB_DATABASE: str
   DB_DRIVER: str
   DB_USERNAME: str
   DB_PASSWORD: str
   DB_HOST: str
-  DB_PORT: str
-
-  @field_validator("ENVIRONMENT")
-  @classmethod
-  def environment_one_of(cls, v: str) -> str:
-    correct_values = ("development", "production", "test")
-    if v not in correct_values:
-      raise ValueError(f"Given value for environment does not match any of required values: {v}. Must be one of {correct_values}")
-    return v
+  DB_PORT: int
 
   @property
   def database_url(self) -> str:
