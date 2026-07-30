@@ -30,6 +30,8 @@ def include_name(name, type_, parent_names):
 # for 'autogenerate' support
 # from myapp import mymodel
 from messanger.src.db.base import Base
+from messanger.src.db import user  # noqa: F401
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
