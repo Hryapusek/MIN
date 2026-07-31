@@ -1,8 +1,8 @@
-"""User table added
+"""Users table added
 
-Revision ID: b8995c563eff
+Revision ID: e36edbad9d63
 Revises: ebb6c2988c9a
-Create Date: 2026-07-30 12:39:36.500130
+Create Date: 2026-07-31 11:26:46.289637
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b8995c563eff'
+revision: str = 'e36edbad9d63'
 down_revision: Union[str, Sequence[str], None] = 'ebb6c2988c9a'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,11 +34,12 @@ def upgrade() -> None:
     sa.Column('password_hash', sa.String(), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-    sa.Column('banned_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('false'), nullable=True),
+    sa.Column('banned_at', sa.TIMESTAMP(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
     sa.UniqueConstraint('email', name=op.f('uq_users_email')),
     schema='auth'
     )
+    # ### end Alembic commands ###
 
 
 def downgrade() -> None:

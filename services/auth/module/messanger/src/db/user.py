@@ -1,15 +1,15 @@
 import enum
 import uuid
+from typing import List
 from datetime import datetime
-from typing import Optional
 
 from messanger.src.db.base import Base
 
-from sqlalchemy import String, TIMESTAMP, UUID, Enum, func, false, true
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import String, TIMESTAMP, UUID, Enum, func, true
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 
-class UserRole(enum.Enum):
+class UserRole(str, enum.Enum):
     USER = "user"
     MODERATOR = "moderator"
     ADMIN = "admin"
@@ -51,7 +51,6 @@ class User(Base):
         onupdate=func.current_timestamp(),
     )
     banned_at: Mapped[datetime | None] = mapped_column(
-        TIMESTAMP(timezone=True),
-        default=False,
-        server_default=false()
+        TIMESTAMP(timezone=True)
     )
+    device_sessions: Mapped[List["DeviceSession"]] = relationship(back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
