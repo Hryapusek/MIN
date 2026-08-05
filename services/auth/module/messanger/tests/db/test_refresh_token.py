@@ -18,8 +18,6 @@ def test_refresh_token_attributes(configure_database_mappers):
     ["expires_at",]
   )
 
-  
-
   index_columns = [sorted([column.name for column in index.columns]) for index in RefreshToken.__table__.indexes]
 
   for required_index in required_columns_indexes_tuples:
