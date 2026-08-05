@@ -32,6 +32,7 @@ def include_name(name, type_, parent_names):
 from messanger.src.db.base import Base
 from messanger.src.db import user
 from messanger.src.db import device_session
+from messanger.src.db import refresh_token
 
 target_metadata = Base.metadata
 

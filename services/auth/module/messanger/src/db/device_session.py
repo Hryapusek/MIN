@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from messanger.src.db.base import Base
@@ -49,3 +49,5 @@ class DeviceSession(Base):
     ) # instant killswitch for all refresh tokens belonging to the current device
 
     user: Mapped["User"] = relationship(back_populates="device_sessions")
+
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(back_populates="device_session", cascade="all, delete-orphan", passive_deletes=True)

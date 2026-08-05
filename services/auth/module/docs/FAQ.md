@@ -1,4 +1,5 @@
-# What is the difference between Engine, Connection, and Session?
+# 27 July
+## What is the difference between Engine, Connection, and Session?
 
 Engine is a factory for the connections. It maintains a internal connection pool. Also it abstracts us from concrete database type. We dont need to create several instances of this.
 
@@ -42,15 +43,15 @@ with SessionLocal() as session:
     session.commit() 
 ```
 
-# Why does Alembic need target_metadata?
+## Why does Alembic need target_metadata?
 Alembic needs target_metadata for autogeneration. It compares the ORM table definitions in Base.metadata against the currently inspected database schema and generates candidate migration operations.
 
 `revision --autogenerate`
 
-# Why should DATABASE_URL come from settings instead of alembic.ini?
+## Why should DATABASE_URL come from settings instead of alembic.ini?
 DATABASE_URL should come from the application settings so Alembic and the application share one environment-specific configuration source, and credentials do not have to be committed in alembic.ini.
 
-# What does expire_on_commit=False change?
+## What does expire_on_commit=False change?
 
 ```py
 user = session.get(User, user_id)
@@ -73,12 +74,34 @@ expire_on_commit=False
     post-commit access keeps current in-memory values,
     which may become stale
 
-# Why use migrations instead of Base.metadata.create_all()?
+## Why use migrations instead of Base.metadata.create_all()?
 
 So that we would track unwanted changes or just to make sure that everything goes in the right way. Also create_all does not use alembic and migrations at all. Migrations are useful as hell actually. Its like a git for the code
 
-# What is the difference between an Alembic revision and the current database state?
+## What is the difference between an Alembic revision and the current database state?
 Alembic revision is like a commit. Current database state is a result of a row of revisions you FEEL ME. Also current database state might differ from revisions if someone for example inserts a trigger in it, but it could be horrible since we should put all the database setup in alembic
 
-# What is the difference between online and offline migrations?
+## What is the difference between online and offline migrations?
 Online migrations run with a database connection and apply operations directly. Offline migrations run without connecting and render SQL for a specified revision range. The generated SQL can be reviewed and applied separately, but migrations that depend on database inspection or runtime data may require special handling.
+
+# 5 August
+## Why store a token hash instead of the raw refresh token?
+Again its a security reason, we dont want full compromise if our database gets stolen
+
+## Why use SHA-256 for a random token but Argon2 for a password?
+Because we will use high entropy hash, we dont need to worry about short length passwords. This hash is almost impossible to hack
+
+## Why is the relationship one device session to many refresh-token rows?
+Because we should store consumed refresh tokens for different reasons. We should be able to detect reuse of old tokens.
+
+## What is family_id for?
+This is needed for fast reaction in case of token reuse
+
+## What does remote_side mean in a self-referential relationship?
+When we specify remote_side on the field - we mean that this field is a parent.
+
+## Why distinguish consumed_at from revoked_at?
+It feels more naturally. Consumed and revoked are two different reasons. In case of revokation - family ends
+
+## Why should replaced_by_id be unique?
+Because its incorrect invariant if we have several same raplaced_by_id rows values. Chains should not intersect each other
