@@ -89,7 +89,7 @@ Online migrations run with a database connection and apply operations directly. 
 Again its a security reason, we dont want full compromise if our database gets stolen
 
 ## Why use SHA-256 for a random token but Argon2 for a password?
-Because we will use high entropy hash, we dont need to worry about short length passwords. This hash is almost impossible to hack
+Passwords have relatively low, human-generated entropy, so Argon2 intentionally makes every guess expensive. Refresh tokens are generated randomly with very high entropy, making guessing infeasible; therefore fast SHA-256 hashing is suitable and enables efficient database lookup.
 
 ## Why is the relationship one device session to many refresh-token rows?
 Because we should store consumed refresh tokens for different reasons. We should be able to detect reuse of old tokens.

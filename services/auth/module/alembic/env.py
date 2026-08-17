@@ -30,9 +30,7 @@ def include_name(name, type_, parent_names):
 # for 'autogenerate' support
 # from myapp import mymodel
 from messanger.src.db.base import Base
-from messanger.src.db import user
-from messanger.src.db import device_session
-from messanger.src.db import refresh_token
+import messanger.src.db
 
 target_metadata = Base.metadata
 

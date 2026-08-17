@@ -58,10 +58,10 @@ class RefreshToken(Base):
     )
 
     replaced_by: Mapped[Optional["RefreshToken"]] = relationship(
-        "RefreshToken", back_populates="parent", remote_side=[id], uselist=False, foreign_keys=replaced_by_id
+        "RefreshToken", back_populates="previous_token", remote_side=[id], uselist=False, foreign_keys=replaced_by_id
     )
 
-    parent: Mapped[Optional["RefreshToken"]] = relationship(
+    previous_token: Mapped[Optional["RefreshToken"]] = relationship(
         "RefreshToken",
         back_populates="replaced_by",
         uselist=False
