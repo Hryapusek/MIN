@@ -22,7 +22,7 @@ def create_dummy_token():
   return RefreshToken(
     id=uuid.uuid4(),
     device_session_id=uuid.uuid4(),
-    token_hash=hashlib.sha256(generate_random_string(50).encode("UTF-8")),
+    token_hash=hashlib.sha256(generate_random_string(50).encode("UTF-8")).digest(),
     family_id=uuid.uuid4(),
     expires_at=datetime.datetime.now() + datetime.timedelta(days=5)
   )
