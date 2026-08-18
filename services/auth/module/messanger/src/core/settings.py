@@ -15,6 +15,8 @@ class MainSettings(BaseSettings):
   DB_PASSWORD: str
   DB_HOST: str
   DB_PORT: int
+  
+  REFRESH_TOKEN_EXPIRE_PERIOD_DAYS: int
 
   @property
   def database_url(self) -> str:
