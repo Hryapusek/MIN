@@ -105,3 +105,28 @@ It feels more naturally. Consumed and revoked are two different reasons. In case
 
 ## Why should replaced_by_id be unique?
 Because its incorrect invariant if we have several same raplaced_by_id rows values. Chains should not intersect each other
+
+# 3 September
+## What is the difference between flush() and commit()?
+flush() synchronizes the current ORM state with the database inside the current transaction. SQL is executed and constraints can already fail, but the transaction remains open and can still be rolled back. commit() first flushes pending changes if necessary and then attempts to commit the transaction permanently.
+
+## Why should a lower-level service often call flush() rather than commit()?
+Because its a task of a higher function to decide what belongs to the current commit and what does not
+
+## What happens to ORM changes after rollback()?
+Rollback reverses the database transaction. Existing persistent ORM objects are expired so they can be reloaded from the database. Objects that were newly inserted during the rolled-back transaction return to a non-persistent/transient state; the Python objects themselves still exist if something references them.
+
+## Why do we hash the provided refresh token before querying the database?
+Because we store the tokens as hashes. Therefore we should first prepare the data we are querying with
+
+## Why should refresh-token rotation happen in one transaction?
+Transaction is especially important here because we definitely dont want to break invariants of database or leave hanging objects in here or just leave it in any middle state
+
+## What race exists when two requests rotate the same token simultaneously?
+Rotating the token effectively is inserting the new token and link it to the previous one. The race is at the point of insertion and issuing. We should check the replaced_by_id and make sure we locked the row before inserting. We can lock the row using with_for_update. Lock is released when the session is commited. But this lock does not mean that other transaction can not read the old value.
+
+## What does SELECT ... FOR UPDATE actually lock, and when is that lock released?
+Accidentially answered in the previous block
+
+## Why shouldn't the raw refresh token ever be recoverable from PostgreSQL?
+A refresh token is a bearer credential: possession is enough to use it. The server never needs to recover the original value after issuance, only verify a presented value. Therefore storing the raw token would unnecessarily turn a database leak into immediate account/session compromise

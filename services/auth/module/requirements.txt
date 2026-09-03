@@ -6,5 +6,6 @@ pydantic-settings
 python-dotenv
 psycopg[binary]
 cryptography
-pytest
 argon2-cffi
+pytest
+pytest-asyncio

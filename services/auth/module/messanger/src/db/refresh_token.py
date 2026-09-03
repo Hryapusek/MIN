@@ -29,8 +29,6 @@ class RefreshToken(Base):
 
     token_hash: Mapped[bytes] = mapped_column(LargeBinary(32), unique=True, index=True)
 
-    family_id: Mapped[uuid.UUID] = mapped_column(UUID(), nullable=False, index=True)
-
     issued_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.current_timestamp()
     )

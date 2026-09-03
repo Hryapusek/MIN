@@ -1,0 +1,32 @@
+[project]
+name = "messanger-auth-module"
+version = "1.0.0"
+description = "Auth facilities"
+requires-python = ">=3.9"
+authors = [
+    {name = "Hryapusek", email = "hellnah@gmail.com"}
+]
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "alembic",
+    "sqlalchemy",
+    "pydantic-settings",
+    "python-dotenv",
+    "psycopg[binary]",
+    "cryptography",
+    "argon2-cffi",
+    "pytest",
+    "pytest-asyncio",
+    "faker"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*", "docs*", "alembic*"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')"
+]
